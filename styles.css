@@ -201,6 +201,10 @@ input:focus {
   box-shadow: 0 0 0 2px rgba(155, 77, 47, 0.2);
 }
 
+.mobile-toolbar-toggle {
+  display: none;
+}
+
 .message-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -807,6 +811,26 @@ button:disabled {
     padding: 10px 10px 0;
   }
 
+  .mobile-toolbar-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - 20px);
+    margin: 10px 10px 0;
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: rgba(33, 53, 71, 0.08);
+    color: var(--ink);
+  }
+
+  .message-editor-shell.is-toolbar-collapsed .message-toolbar {
+    display: none;
+  }
+
+  .message-editor-shell.is-toolbar-collapsed .editor-surface {
+    margin-top: 10px;
+  }
+
   .toolbar-row {
     display: grid;
     gap: 8px;
@@ -1016,6 +1040,10 @@ button:disabled {
     display: none !important;
   }
 
+  .mobile-toolbar-toggle {
+    display: none !important;
+  }
+
   .paper-frame {
     padding: 0;
     border: 0;
@@ -1027,21 +1055,43 @@ button:disabled {
 
   .preview-pages {
     gap: 0;
+    width: 209mm;
+    margin: 0 auto;
   }
 
   .a4-page {
-    width: 210mm;
-    height: 297mm;
+    width: 209mm;
+    height: 296mm;
     aspect-ratio: auto;
+    display: flex;
+    flex-direction: column;
     border-radius: 0;
     page-break-after: always;
     break-after: page;
     background: var(--paper) !important;
+    overflow: hidden;
   }
 
   .a4-page:last-child {
     page-break-after: auto;
     break-after: auto;
+  }
+
+  .page-header {
+    flex: 0 0 150px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .page-body {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .page-footer {
+    flex: 0 0 96px;
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
 
   .page-header {

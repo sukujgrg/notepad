@@ -14,7 +14,9 @@
     "@lexical/rich-text": "^0.41.0",
     "@lexical/selection": "^0.41.0",
     "html-to-image": "^1.11.13",
-    "lexical": "^0.41.0"
+    "html-to-pdfmake": "^2.5.33",
+    "lexical": "^0.41.0",
+    "pdfmake": "^0.3.6"
   },
   "devDependencies": {
     "vite": "^6.4.0"

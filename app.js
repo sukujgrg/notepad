@@ -43,6 +43,7 @@ const DEFAULT_FONT_SIZE = "22px";
 const DEFAULT_TEXT_COLOR = "#1f2430";
 const DEFAULT_HEADER_COLOR = (import.meta.env.VITE_HEADER_COLOR || "#213547").trim();
 const DEFAULT_FOOTER_COLOR = (import.meta.env.VITE_FOOTER_COLOR || "#2e4f3f").trim();
+const DEFAULT_ACCENT_COLOR = "#9b4d2f";
 const PREVIEW_PAGE_HEIGHT = 1754;
 
 const FONT_FAMILY_PRESETS = {
@@ -113,9 +114,13 @@ const clearButton = document.querySelector("#clearButton");
 const statusMessage = document.querySelector("#statusMessage");
 const messageEditor = document.querySelector("#messageEditor");
 const messageEditorShell = document.querySelector("#messageEditorShell");
+const mobileToolbarToggle = document.querySelector("#mobileToolbarToggle");
 const editorPlaceholder = document.querySelector("#editorPlaceholder");
 
 const logoImage = new Image();
+const userAgent = navigator.userAgent;
+const isApplePdfBrowser = /iPad|iPhone|iPod/.test(userAgent)
+  || (/Safari/i.test(userAgent) && !/Chrome|Chromium|Android/.test(userAgent));
 
 const editor = createEditor({
   namespace: "lsc-notepad",
@@ -141,6 +146,8 @@ editor.setRootElement(messageEditor);
 let currentMessage = DEFAULT_MESSAGE;
 let currentLogoDataUrl = "";
 let isFontFamilyMenuOpen = false;
+const mobileToolbarMedia = window.matchMedia("(max-width: 640px)");
+let isMobileToolbarCollapsed = mobileToolbarMedia.matches;
 
 function setInitialMessage(text) {
   editor.update(() => {
@@ -171,10 +178,6 @@ function getMessageText(editorState = editor.getEditorState()) {
 }
 
 function formatDateDisplay(value) {
-  if (!value) {
-    return "Select a date";
-  }
-
   const [year, month, day] = value.split("-");
   const date = new Date(Number(year), Number(month) - 1, Number(day));
 
@@ -208,6 +211,17 @@ function closeFontFamilyMenu() {
   fontFamilyButton.setAttribute("aria-expanded", "false");
   fontFamilyButton.classList.remove("is-active");
   fontFamilyButton.blur();
+}
+
+function applyMobileToolbarState() {
+  const shouldCollapse = mobileToolbarMedia.matches ? isMobileToolbarCollapsed : false;
+  messageEditorShell.classList.toggle("is-toolbar-collapsed", shouldCollapse);
+  mobileToolbarToggle.setAttribute("aria-expanded", String(!shouldCollapse));
+  mobileToolbarToggle.textContent = shouldCollapse ? "Text Controls" : "Hide Controls";
+
+  if (shouldCollapse) {
+    closeFontFamilyMenu();
+  }
 }
 
 function openFontFamilyMenu() {
@@ -349,7 +363,7 @@ function initializeFormDefaults() {
   footerTextInput.value = DEFAULT_FOOTER_TEXT;
   headerColorInput.value = DEFAULT_HEADER_COLOR;
   footerColorInput.value = DEFAULT_FOOTER_COLOR;
-  placeInput.value = DEFAULT_PLACE_TEXT;
+  placeInput.placeholder = DEFAULT_PLACE_TEXT;
   updateLogo(DEFAULT_LOGO_URL);
 }
 
@@ -360,8 +374,8 @@ function getBrandingState() {
     footerText: footerTextInput.value.trim() || DEFAULT_FOOTER_TEXT,
     headerColor: headerColorInput.value || DEFAULT_HEADER_COLOR,
     footerColor: footerColorInput.value || DEFAULT_FOOTER_COLOR,
-    dateText: formatDateDisplay(dateInput.value),
-    placeText: placeInput.value.trim() || DEFAULT_PLACE_TEXT,
+    dateText: dateInput.value ? formatDateDisplay(dateInput.value) : "",
+    placeText: placeInput.value.trim(),
   };
 }
 
@@ -661,17 +675,305 @@ async function waitForAssets() {
   ]);
 }
 
+function sanitizePdfHtml(html) {
+  const source = document.createElement("div");
+  source.innerHTML = html || '<p class="preview-empty">Type your message here.</p>';
+
+  source.querySelectorAll("*").forEach((element) => {
+    element.style.removeProperty("font-family");
+    element.style.removeProperty("background");
+    element.style.removeProperty("background-color");
+  });
+
+  return source.innerHTML;
+}
+
+async function resolvePdfLogo() {
+  if (!currentLogoDataUrl) {
+    return null;
+  }
+
+  if (currentLogoDataUrl.startsWith("data:")) {
+    return currentLogoDataUrl;
+  }
+
+  const response = await fetch(currentLogoDataUrl);
+  if (!response.ok) {
+    throw new Error("Logo could not be loaded for the PDF.");
+  }
+
+  const blob = await response.blob();
+  return await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener("load", () => resolve(typeof reader.result === "string" ? reader.result : null));
+    reader.addEventListener("error", () => reject(new Error("Logo could not be read for the PDF.")));
+    reader.readAsDataURL(blob);
+  });
+}
+
+function buildPdfHeader(branding, pageSize, logoDataUrl) {
+  const headerStack = [
+    {
+      text: branding.headerLabel.toUpperCase(),
+      fontSize: 10,
+      bold: true,
+      characterSpacing: 2.4,
+      color: "#d8e0eb",
+      margin: [0, 0, 0, 8],
+    },
+    {
+      text: branding.headerTitle,
+      fontSize: 26,
+      bold: true,
+      color: "#ffffff",
+      lineHeight: 1.05,
+    },
+  ];
+
+  return {
+    margin: [0, 0, 0, 0],
+    stack: [
+      {
+        canvas: [
+          {
+            type: "rect",
+            x: 0,
+            y: 0,
+            w: pageSize.width,
+            h: 8,
+            color: DEFAULT_ACCENT_COLOR,
+          },
+          {
+            type: "rect",
+            x: 0,
+            y: 8,
+            w: pageSize.width,
+            h: 106,
+            color: branding.headerColor,
+          },
+          {
+            type: "line",
+            x1: 42,
+            y1: 96,
+            x2: pageSize.width - 42,
+            y2: 96,
+            lineWidth: 1,
+            lineColor: "#415265",
+          },
+        ],
+      },
+      logoDataUrl
+        ? {
+            absolutePosition: { x: 42, y: 30 },
+            columns: [
+              {
+                image: logoDataUrl,
+                fit: [48, 48],
+                width: 48,
+                margin: [0, 0, 14, 0],
+              },
+              {
+                width: "*",
+                stack: headerStack,
+                margin: [0, 2, 0, 0],
+              },
+            ],
+          }
+        : {
+            absolutePosition: { x: 42, y: 32 },
+            stack: headerStack,
+          },
+    ],
+  };
+}
+
+function buildPdfFooter(branding, currentPage, pageCount, pageSize) {
+  return {
+    margin: [0, 0, 0, 0],
+    stack: [
+      {
+        canvas: [
+          {
+            type: "line",
+            x1: 42,
+            y1: 0,
+            x2: pageSize.width - 42,
+            y2: 0,
+            lineWidth: 2,
+            lineColor: branding.footerColor,
+          },
+        ],
+      },
+      {
+        margin: [42, 12, 42, 0],
+        columns: [
+          {
+            width: "*",
+            text: branding.footerText,
+            color: branding.footerColor,
+            fontSize: 9,
+            characterSpacing: 0.5,
+          },
+          {
+            width: "auto",
+            text: `${currentPage} / ${pageCount}`,
+            alignment: "right",
+            color: "#8f949d",
+            fontSize: 9,
+            bold: true,
+          },
+        ],
+      },
+    ],
+  };
+}
+
+function buildPdfMeta(branding) {
+  return {
+    columns: [
+      {
+        width: "*",
+        stack: [
+          { text: "DATE", fontSize: 10, bold: true, color: "#8f949d", characterSpacing: 2, margin: [0, 0, 0, 6] },
+          { text: branding.dateText, fontSize: 16, bold: true, color: "#27313d" },
+          {
+            canvas: [{ type: "line", x1: 0, y1: 12, x2: 235, y2: 12, lineWidth: 1, lineColor: "#cfd4dc" }],
+            margin: [0, 8, 0, 0],
+          },
+        ],
+      },
+      { width: 24, text: "" },
+      {
+        width: "*",
+        stack: [
+          { text: "PLACE", fontSize: 10, bold: true, color: "#8f949d", characterSpacing: 2, margin: [0, 0, 0, 6] },
+          { text: branding.placeText, fontSize: 16, bold: true, color: "#27313d" },
+          {
+            canvas: [{ type: "line", x1: 0, y1: 12, x2: 235, y2: 12, lineWidth: 1, lineColor: "#cfd4dc" }],
+            margin: [0, 8, 0, 0],
+          },
+        ],
+      },
+    ],
+    margin: [0, 0, 0, 24],
+  };
+}
+
+function escapeHtml(value) {
+  return value.replace(/[&<>"']/g, (character) => {
+    const replacements = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    };
+    return replacements[character] || character;
+  });
+}
+
+function renderPdfInWindow(pdfWindow, blobUrl, filename) {
+  const safeTitle = escapeHtml(filename);
+  pdfWindow.document.open();
+  pdfWindow.document.write(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>${safeTitle}</title>
+  <style>
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: #1c2330;
+    }
+
+    iframe {
+      border: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: #1c2330;
+    }
+  </style>
+</head>
+<body>
+  <iframe src="${blobUrl}" title="${safeTitle}"></iframe>
+</body>
+</html>`);
+  pdfWindow.document.close();
+}
+
+function triggerPdfDownload(blob, filename, pendingWindow = null) {
+  const blobUrl = URL.createObjectURL(blob);
+  const pdfWindow = pendingWindow || window.open("", "_blank");
+
+  if (pdfWindow) {
+    renderPdfInWindow(pdfWindow, blobUrl, filename);
+    setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
+    return "PDF opened in a new tab.";
+  }
+
+  const link = document.createElement("a");
+  link.href = blobUrl;
+  link.download = filename;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(blobUrl), 5_000);
+  return "PDF download started instead because a new tab was blocked.";
+}
+
 async function printPdf() {
   printButton.disabled = true;
-  statusMessage.textContent = "Opening print dialog...";
+  statusMessage.textContent = "Generating PDF...";
+  const pendingWindow = window.open("", "_blank");
 
   try {
+    const [{ default: htmlToPdfmake }, { default: pdfMake }, { default: pdfFonts }] = await Promise.all([
+      import("html-to-pdfmake"),
+      import("pdfmake/build/pdfmake.js"),
+      import("pdfmake/build/vfs_fonts.js"),
+    ]);
+
+    pdfMake.addVirtualFileSystem(pdfFonts);
     await waitForAssets();
-    window.print();
-    statusMessage.textContent = "Use your browser's Save as PDF option to export the pages.";
+
+    const branding = getBrandingState();
+    let previewHtml = "";
+    editor.getEditorState().read(() => {
+      previewHtml = $generateHtmlFromNodes(editor, null);
+    });
+
+    const logoDataUrl = await resolvePdfLogo();
+    const messageContent = htmlToPdfmake(sanitizePdfHtml(previewHtml), { window });
+    const contentBlocks = Array.isArray(messageContent) ? messageContent : [messageContent];
+
+    const docDefinition = {
+      pageSize: "A4",
+      pageMargins: [42, 132, 42, 56],
+      defaultStyle: {
+        font: "Roboto",
+        color: "#27313d",
+        lineHeight: 1.35,
+      },
+      header: (currentPage, pageCount, pageSize) => buildPdfHeader(branding, pageSize, logoDataUrl),
+      footer: (currentPage, pageCount, pageSize) => buildPdfFooter(branding, currentPage, pageCount, pageSize),
+      content: [
+        buildPdfMeta(branding),
+        ...contentBlocks,
+      ],
+    };
+
+    const blob = await pdfMake.createPdf(docDefinition).getBlob();
+    statusMessage.textContent = triggerPdfDownload(blob, "notepad-sheet.pdf", pendingWindow);
   } catch (error) {
+    if (pendingWindow) {
+      pendingWindow.close();
+    }
     console.error(error);
-    statusMessage.textContent = "Could not open the print dialog.";
+    statusMessage.textContent = "Could not generate the PDF.";
   } finally {
     printButton.disabled = false;
   }
@@ -747,6 +1049,10 @@ textColorInput.addEventListener("input", () => {
 });
 
 printButton.addEventListener("click", printPdf);
+mobileToolbarToggle.addEventListener("click", () => {
+  isMobileToolbarCollapsed = !isMobileToolbarCollapsed;
+  applyMobileToolbarState();
+});
 
 [
   fontFamilyButton,
@@ -806,6 +1112,11 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+mobileToolbarMedia.addEventListener("change", (event) => {
+  isMobileToolbarCollapsed = event.matches;
+  applyMobileToolbarState();
+});
+
 undoButton.disabled = true;
 redoButton.disabled = true;
 initializeFormDefaults();
@@ -814,3 +1125,4 @@ updateLogo(currentLogoDataUrl);
 syncPreview();
 updateToolbarState();
 setFontFamilyControl(DEFAULT_FONT_FAMILY);
+applyMobileToolbarState();

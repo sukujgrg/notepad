@@ -1,6 +1,6 @@
 # Branded Notepad Generator
 
-Static web app for creating branded A4 notepad pages and exporting them through the browser print flow as PDF.
+Static web app for creating branded A4 notepad pages and downloading them as PDF.
 
 The rich-text editor is powered by [Lexical](https://lexical.dev/).
 
@@ -15,12 +15,13 @@ The rich-text editor is powered by [Lexical](https://lexical.dev/).
 - rich-text message editor built with Lexical
 - date and place fields
 - automatic multi-page A4 pagination for print
-- browser-based `Print / Save PDF` output
+- client-side PDF export powered by pdfmake
 
 ## Tech Stack
 
 - Vite
 - Lexical
+- pdfmake
 - plain HTML, CSS, and JavaScript
 
 ## Run Locally
@@ -133,10 +134,4 @@ Notes:
 
 ## PDF Export
 
-Use the `Print / Save PDF` button in the app, then choose `Save as PDF` in the browser print dialog.
-
-Notes:
-
-- Chrome generally gives the most reliable PDF output.
-- Safari may render print backgrounds differently than Chrome.
-- If header or footer colors are missing in print, enable background graphics in the print dialog if your browser provides that option.
+Use the `Download PDF` button in the app to generate and download the document directly in the browser.

@@ -16,7 +16,7 @@
         <p class="eyebrow">Editor</p>
         <h1>Notepad Generator</h1>
         <p class="intro">
-          Customize the header, footer, colors, and logo, then print the A4 sheet to PDF.
+          Customize the header, footer, colors, and logo, then download the A4 sheet as a PDF.
         </p>
       </div>
 
@@ -69,7 +69,16 @@
       <div class="field message-field">
         <span>Message</span>
         <div class="message-editor-shell" id="messageEditorShell">
-          <div class="message-toolbar" aria-label="Message editor toolbar">
+          <button
+            id="mobileToolbarToggle"
+            class="mobile-toolbar-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="messageToolbar"
+          >
+            Text Controls
+          </button>
+          <div id="messageToolbar" class="message-toolbar" aria-label="Message editor toolbar">
             <div class="toolbar-row toolbar-row--primary">
               <div class="toolbar-group toolbar-group--type" aria-label="Typography controls">
                 <div class="toolbar-picker" id="fontFamilyPicker">
@@ -194,11 +203,11 @@
       </div>
 
       <div class="actions">
-        <button id="printButton" type="button">Print / Save PDF</button>
+        <button id="printButton" type="button">Download PDF</button>
       </div>
 
       <p class="hint" id="statusMessage">
-        Customize the branding, message, and print the sheet as a PDF.
+        Customize the branding, message, and download the sheet as a PDF.
       </p>
     </section>
 
