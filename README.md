@@ -121,8 +121,9 @@ Set these in `Settings -> Secrets and variables -> Actions -> Variables` if you 
 
 Notes:
 
-- For a custom domain, `VITE_BASE_PATH` should usually stay `/`.
-- For a project Pages site at `https://username.github.io/repository-name/`, set `VITE_BASE_PATH` to `/repository-name/`.
+- If `VITE_BASE_PATH` is not set, the GitHub Pages workflow automatically uses `/<repository-name>/`.
+- For a custom domain, set `VITE_BASE_PATH` to `/`.
+- For a project Pages site at `https://username.github.io/repository-name/`, you can leave `VITE_BASE_PATH` unset or set it explicitly to `/repository-name/`.
 
 ## PDF Export
 
