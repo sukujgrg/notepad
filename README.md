@@ -2,6 +2,10 @@
 
 Static web app for creating branded A4 notepad pages and exporting them through the browser print flow as PDF.
 
+## Demo
+
+[https://sukujgrg.github.io/notepad/](https://sukujgrg.github.io/notepad/)
+
 ## What It Does
 
 - customizable header label, title, footer text, and colors
