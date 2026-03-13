@@ -20,7 +20,6 @@ Static web app for creating branded A4 notepad pages and exporting them through 
 ## Run Locally
 
 ```bash
-cd /Users/suku/github/lscnotepad
 npm install
 npm run dev
 ```
@@ -30,18 +29,39 @@ Open the local Vite URL in your browser.
 ## Production Build
 
 ```bash
-cd /Users/suku/github/lscnotepad
 npm run build
 ```
 
 The built static site is written to:
 
-- `/Users/suku/github/lscnotepad/dist`
+- `dist/`
+
+## Build-Time Defaults
+
+This app supports build-time branding defaults through Vite environment variables.
+
+Copy [.env.example](/Users/suku/github/lscnotepad/.env.example) to `.env` or set the variables in your build environment:
+
+```bash
+VITE_HEADER_LABEL="Brand Label"
+VITE_HEADER_TITLE="Branded Notepad"
+VITE_FOOTER_TEXT="123 Example Street, Sydney NSW 2000"
+VITE_HEADER_COLOR="#213547"
+VITE_FOOTER_COLOR="#2e4f3f"
+VITE_PLACE_TEXT="Add a place"
+VITE_LOGO_URL="/branding/logo.png"
+```
+
+Notes:
+
+- `VITE_HEADER_COLOR` and `VITE_FOOTER_COLOR` should be valid hex colors.
+- `VITE_LOGO_URL` is optional.
+- `VITE_LOGO_URL` should point to a logo file that will exist in the deployed site, for example a file under `public/`.
+- users can still change the values in the UI after the page loads.
 
 ## Preview Production Build Locally
 
 ```bash
-cd /Users/suku/github/lscnotepad
 npm run preview
 ```
 
@@ -59,14 +79,50 @@ Typical options:
 Example basic flow:
 
 ```bash
-cd /Users/suku/github/lscnotepad
 npm install
 npm run build
 ```
 
+If you want a branded build for a specific deployment, set the `VITE_*` variables before running `npm run build`.
+
 Then publish the files from:
 
-- `/Users/suku/github/lscnotepad/dist`
+- `dist/`
+
+## GitHub Pages
+
+A GitHub Actions workflow is included at [.github/workflows/github-pages.yml](/Users/suku/github/lscnotepad/.github/workflows/github-pages.yml).
+
+It:
+
+- installs dependencies
+- builds the Vite app
+- deploys `dist/` to GitHub Pages
+
+### Setup
+
+1. Push the repository to GitHub.
+2. In GitHub, open `Settings -> Pages`.
+3. Set `Source` to `GitHub Actions`.
+4. Push to `main` or run the workflow manually from the Actions tab.
+
+### Optional Repository Variables
+
+Set these in `Settings -> Secrets and variables -> Actions -> Variables` if you want branded defaults in the deployed build:
+
+- `VITE_HEADER_LABEL`
+- `VITE_HEADER_TITLE`
+- `VITE_FOOTER_TEXT`
+- `VITE_HEADER_COLOR`
+- `VITE_FOOTER_COLOR`
+- `VITE_PLACE_TEXT`
+- `VITE_LOGO_URL`
+- `VITE_BASE_PATH`
+
+Notes:
+
+- For a custom domain, `VITE_BASE_PATH` should usually stay `/`.
+- For a project Pages site at `https://username.github.io/repository-name/`, set `VITE_BASE_PATH` to `/repository-name/`.
 
 ## PDF Export
 

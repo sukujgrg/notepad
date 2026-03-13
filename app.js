@@ -33,12 +33,16 @@ import { $getSelectionStyleValueForProperty, $patchStyleText } from "@lexical/se
 const DEFAULT_MESSAGE = `Add your announcement, update, or notice here.
 
 Use the toolbar to style the content before exporting the page.`;
-
+const DEFAULT_HEADER_LABEL = (import.meta.env.VITE_HEADER_LABEL || "Brand Label").trim();
+const DEFAULT_HEADER_TITLE = (import.meta.env.VITE_HEADER_TITLE || "Branded Notepad").trim();
+const DEFAULT_FOOTER_TEXT = (import.meta.env.VITE_FOOTER_TEXT || "123 Example Street, Sydney NSW 2000").trim();
+const DEFAULT_LOGO_URL = (import.meta.env.VITE_LOGO_URL || "").trim();
+const DEFAULT_PLACE_TEXT = (import.meta.env.VITE_PLACE_TEXT || "Add a place").trim();
 const DEFAULT_FONT_FAMILY = "manrope";
 const DEFAULT_FONT_SIZE = "22px";
 const DEFAULT_TEXT_COLOR = "#1f2430";
-const DEFAULT_HEADER_COLOR = "#213547";
-const DEFAULT_FOOTER_COLOR = "#2e4f3f";
+const DEFAULT_HEADER_COLOR = (import.meta.env.VITE_HEADER_COLOR || "#213547").trim();
+const DEFAULT_FOOTER_COLOR = (import.meta.env.VITE_FOOTER_COLOR || "#2e4f3f").trim();
 const PREVIEW_PAGE_HEIGHT = 1754;
 
 const FONT_FAMILY_PRESETS = {
@@ -339,15 +343,25 @@ function updateLogo(source) {
   }
 }
 
+function initializeFormDefaults() {
+  headerLabelInput.value = DEFAULT_HEADER_LABEL;
+  headerTitleInput.value = DEFAULT_HEADER_TITLE;
+  footerTextInput.value = DEFAULT_FOOTER_TEXT;
+  headerColorInput.value = DEFAULT_HEADER_COLOR;
+  footerColorInput.value = DEFAULT_FOOTER_COLOR;
+  placeInput.value = DEFAULT_PLACE_TEXT;
+  updateLogo(DEFAULT_LOGO_URL);
+}
+
 function getBrandingState() {
   return {
-    headerLabel: headerLabelInput.value.trim() || "Brand Label",
-    headerTitle: headerTitleInput.value.trim() || "Branded Notepad",
-    footerText: footerTextInput.value.trim() || "123 Example Street, Sydney NSW 2000",
+    headerLabel: headerLabelInput.value.trim() || DEFAULT_HEADER_LABEL,
+    headerTitle: headerTitleInput.value.trim() || DEFAULT_HEADER_TITLE,
+    footerText: footerTextInput.value.trim() || DEFAULT_FOOTER_TEXT,
     headerColor: headerColorInput.value || DEFAULT_HEADER_COLOR,
     footerColor: footerColorInput.value || DEFAULT_FOOTER_COLOR,
     dateText: formatDateDisplay(dateInput.value),
-    placeText: placeInput.value.trim() || "Add a place",
+    placeText: placeInput.value.trim() || DEFAULT_PLACE_TEXT,
   };
 }
 
@@ -794,6 +808,7 @@ document.addEventListener("keydown", (event) => {
 
 undoButton.disabled = true;
 redoButton.disabled = true;
+initializeFormDefaults();
 setInitialMessage(DEFAULT_MESSAGE);
 updateLogo(currentLogoDataUrl);
 syncPreview();
