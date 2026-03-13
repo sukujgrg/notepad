@@ -719,14 +719,14 @@ function buildPdfHeader(branding, pageSize, logoDataUrl) {
       bold: true,
       characterSpacing: 2.4,
       color: "#d8e0eb",
-      margin: [0, 0, 0, 8],
+      margin: [0, 0, 0, 6],
     },
     {
       text: branding.headerTitle,
-      fontSize: 26,
+      fontSize: 24,
       bold: true,
       color: "#ffffff",
-      lineHeight: 1.05,
+      lineHeight: 1.02,
     },
   ];
 
@@ -754,9 +754,9 @@ function buildPdfHeader(branding, pageSize, logoDataUrl) {
           {
             type: "line",
             x1: 42,
-            y1: 96,
+            y1: 98,
             x2: pageSize.width - 42,
-            y2: 96,
+            y2: 98,
             lineWidth: 1,
             lineColor: "#415265",
           },
@@ -764,23 +764,25 @@ function buildPdfHeader(branding, pageSize, logoDataUrl) {
       },
       logoDataUrl
         ? {
-            absolutePosition: { x: 42, y: 30 },
+            absolutePosition: { x: 42, y: 24 },
+            width: pageSize.width - 84,
             columns: [
               {
                 image: logoDataUrl,
-                fit: [48, 48],
-                width: 48,
-                margin: [0, 0, 14, 0],
+                fit: [56, 56],
+                width: 56,
+                margin: [0, 4, 16, 0],
               },
               {
                 width: "*",
                 stack: headerStack,
-                margin: [0, 2, 0, 0],
+                margin: [0, 1, 0, 0],
               },
             ],
           }
         : {
-            absolutePosition: { x: 42, y: 32 },
+            absolutePosition: { x: 42, y: 24 },
+            width: pageSize.width - 84,
             stack: headerStack,
           },
     ],
