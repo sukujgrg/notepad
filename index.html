@@ -81,7 +81,7 @@
           <div id="messageToolbar" class="message-toolbar" aria-label="Message editor toolbar">
             <div class="toolbar-row toolbar-row--primary">
               <div class="toolbar-group toolbar-group--type" aria-label="Typography controls">
-                <div class="toolbar-picker" id="fontFamilyPicker">
+                <div class="toolbar-picker toolbar-picker--font" id="fontFamilyPicker">
                   <button
                     id="fontFamilyButton"
                     class="toolbar-picker-button"
@@ -119,15 +119,27 @@
                     </button>
                   </div>
                 </div>
-                <label class="toolbar-select-wrap" for="fontSizeInput">
-                  <span class="sr-only">Font size</span>
-                  <select id="fontSizeInput" class="toolbar-select">
-                    <option value="18px">18</option>
-                    <option value="22px" selected>22</option>
-                    <option value="26px">26</option>
-                    <option value="32px">32</option>
-                  </select>
-                </label>
+                <div class="toolbar-picker toolbar-picker--size" id="fontSizePicker">
+                  <button
+                    id="fontSizeButton"
+                    class="toolbar-picker-button toolbar-picker-button--compact"
+                    type="button"
+                    aria-haspopup="listbox"
+                    aria-expanded="false"
+                    aria-controls="fontSizeMenu"
+                    aria-label="Font size"
+                    title="Font size"
+                  >
+                    <span id="fontSizeButtonLabel">22</span>
+                    <span class="toolbar-picker-caret" aria-hidden="true"></span>
+                  </button>
+                  <div id="fontSizeMenu" class="toolbar-picker-menu toolbar-picker-menu--compact" role="listbox" hidden>
+                    <button class="font-size-option" type="button" role="option" data-font-size="18px" aria-selected="false">18</button>
+                    <button class="font-size-option" type="button" role="option" data-font-size="22px" aria-selected="true">22</button>
+                    <button class="font-size-option" type="button" role="option" data-font-size="26px" aria-selected="false">26</button>
+                    <button class="font-size-option" type="button" role="option" data-font-size="32px" aria-selected="false">32</button>
+                  </div>
+                </div>
                 <label class="toolbar-select-wrap toolbar-color-wrap" for="textColorInput">
                   <span class="sr-only">Text color</span>
                   <input id="textColorInput" class="toolbar-color" type="color" value="#1f2430">

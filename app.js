@@ -98,7 +98,10 @@ const fontFamilyButton = document.querySelector("#fontFamilyButton");
 const fontFamilyButtonLabel = document.querySelector("#fontFamilyButtonLabel");
 const fontFamilyMenu = document.querySelector("#fontFamilyMenu");
 const fontFamilyOptions = Array.from(document.querySelectorAll(".font-family-option"));
-const fontSizeInput = document.querySelector("#fontSizeInput");
+const fontSizeButton = document.querySelector("#fontSizeButton");
+const fontSizeButtonLabel = document.querySelector("#fontSizeButtonLabel");
+const fontSizeMenu = document.querySelector("#fontSizeMenu");
+const fontSizeOptions = Array.from(document.querySelectorAll(".font-size-option"));
 const textColorInput = document.querySelector("#textColorInput");
 const boldButton = document.querySelector("#boldButton");
 const italicButton = document.querySelector("#italicButton");
@@ -146,6 +149,7 @@ editor.setRootElement(messageEditor);
 let currentMessage = DEFAULT_MESSAGE;
 let currentLogoDataUrl = "";
 let isFontFamilyMenuOpen = false;
+let isFontSizeMenuOpen = false;
 const mobileToolbarMedia = window.matchMedia("(max-width: 640px)");
 let isMobileToolbarCollapsed = mobileToolbarMedia.matches;
 
@@ -213,6 +217,25 @@ function closeFontFamilyMenu() {
   fontFamilyButton.blur();
 }
 
+function setFontSizeControl(value) {
+  const selectedSize = value || DEFAULT_FONT_SIZE;
+  fontSizeButtonLabel.textContent = selectedSize.replace("px", "");
+
+  for (const option of fontSizeOptions) {
+    const isActive = option.dataset.fontSize === selectedSize;
+    option.classList.toggle("is-active", isActive);
+    option.setAttribute("aria-selected", String(isActive));
+  }
+}
+
+function closeFontSizeMenu() {
+  isFontSizeMenuOpen = false;
+  fontSizeMenu.hidden = true;
+  fontSizeButton.setAttribute("aria-expanded", "false");
+  fontSizeButton.classList.remove("is-active");
+  fontSizeButton.blur();
+}
+
 function applyMobileToolbarState() {
   const shouldCollapse = mobileToolbarMedia.matches ? isMobileToolbarCollapsed : false;
   messageEditorShell.classList.toggle("is-toolbar-collapsed", shouldCollapse);
@@ -221,6 +244,7 @@ function applyMobileToolbarState() {
 
   if (shouldCollapse) {
     closeFontFamilyMenu();
+    closeFontSizeMenu();
   }
 }
 
@@ -235,7 +259,24 @@ function toggleFontFamilyMenu() {
   if (isFontFamilyMenuOpen) {
     closeFontFamilyMenu();
   } else {
+    closeFontSizeMenu();
     openFontFamilyMenu();
+  }
+}
+
+function openFontSizeMenu() {
+  isFontSizeMenuOpen = true;
+  fontSizeMenu.hidden = false;
+  fontSizeButton.setAttribute("aria-expanded", "true");
+  fontSizeButton.classList.add("is-active");
+}
+
+function toggleFontSizeMenu() {
+  if (isFontSizeMenuOpen) {
+    closeFontSizeMenu();
+  } else {
+    closeFontFamilyMenu();
+    openFontSizeMenu();
   }
 }
 
@@ -625,7 +666,7 @@ function updateToolbarState(editorState = editor.getEditorState()) {
       setButtonState(bulletListButton, false);
       setButtonState(numberListButton, false);
       setFontFamilyControl(DEFAULT_FONT_FAMILY);
-      fontSizeInput.value = DEFAULT_FONT_SIZE;
+      setFontSizeControl(DEFAULT_FONT_SIZE);
       textColorInput.value = DEFAULT_TEXT_COLOR;
       return;
     }
@@ -645,7 +686,7 @@ function updateToolbarState(editorState = editor.getEditorState()) {
     setButtonState(numberListButton, listType === "number");
 
     setFontFamilyControl(selectedFontFamily);
-    fontSizeInput.value = selectedFontSize;
+    setFontSizeControl(selectedFontSize);
     textColorInput.value = selectedTextColor;
   });
 }
@@ -1034,6 +1075,10 @@ fontFamilyButton.addEventListener("click", (event) => {
   event.stopPropagation();
   toggleFontFamilyMenu();
 });
+fontSizeButton.addEventListener("click", (event) => {
+  event.stopPropagation();
+  toggleFontSizeMenu();
+});
 fontFamilyOptions.forEach((option) => {
   option.addEventListener("click", (event) => {
     event.stopPropagation();
@@ -1043,8 +1088,14 @@ fontFamilyOptions.forEach((option) => {
     closeFontFamilyMenu();
   });
 });
-fontSizeInput.addEventListener("change", () => {
-  applySelectionStyle({ "font-size": fontSizeInput.value });
+fontSizeOptions.forEach((option) => {
+  option.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const selectedSize = option.dataset.fontSize || DEFAULT_FONT_SIZE;
+    applySelectionStyle({ "font-size": selectedSize });
+    setFontSizeControl(selectedSize);
+    closeFontSizeMenu();
+  });
 });
 textColorInput.addEventListener("input", () => {
   applySelectionStyle({ color: textColorInput.value });
@@ -1058,6 +1109,7 @@ mobileToolbarToggle.addEventListener("click", () => {
 
 [
   fontFamilyButton,
+  fontSizeButton,
   boldButton,
   italicButton,
   underlineButton,
@@ -1072,6 +1124,7 @@ mobileToolbarToggle.addEventListener("click", () => {
 ].forEach(preserveSelectionOnMouseDown);
 
 fontFamilyOptions.forEach(preserveSelectionOnMouseDown);
+fontSizeOptions.forEach(preserveSelectionOnMouseDown);
 
 boldButton.addEventListener("click", () => dispatchEditorCommand(FORMAT_TEXT_COMMAND, "bold"));
 italicButton.addEventListener("click", () => dispatchEditorCommand(FORMAT_TEXT_COMMAND, "italic"));
@@ -1106,11 +1159,16 @@ document.addEventListener("click", (event) => {
   if (!fontFamilyMenu.contains(event.target) && !fontFamilyButton.contains(event.target)) {
     closeFontFamilyMenu();
   }
+
+  if (!fontSizeMenu.contains(event.target) && !fontSizeButton.contains(event.target)) {
+    closeFontSizeMenu();
+  }
 });
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     closeFontFamilyMenu();
+    closeFontSizeMenu();
   }
 });
 
@@ -1121,6 +1179,7 @@ mobileToolbarMedia.addEventListener("change", (event) => {
 
 undoButton.disabled = true;
 redoButton.disabled = true;
+setFontSizeControl(DEFAULT_FONT_SIZE);
 initializeFormDefaults();
 setInitialMessage(DEFAULT_MESSAGE);
 updateLogo(currentLogoDataUrl);

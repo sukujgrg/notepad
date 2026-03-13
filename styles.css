@@ -260,6 +260,10 @@ input:focus {
   min-width: 150px;
 }
 
+.toolbar-picker--size {
+  min-width: 88px;
+}
+
 .toolbar-picker-button {
   display: inline-flex;
   align-items: center;
@@ -274,6 +278,11 @@ input:focus {
   color: var(--ink);
   font-weight: 600;
   text-align: left;
+}
+
+.toolbar-picker-button--compact {
+  min-width: 88px;
+  padding-right: 10px;
 }
 
 .toolbar-picker-button.is-active {
@@ -306,6 +315,11 @@ input:focus {
   gap: 4px;
 }
 
+.toolbar-picker-menu--compact {
+  width: 88px;
+  min-width: 88px;
+}
+
 .toolbar-picker-menu[hidden] {
   display: none;
 }
@@ -327,6 +341,25 @@ input:focus {
 }
 
 .font-family-option.is-active {
+  color: var(--accent-strong);
+}
+
+.font-size-option {
+  width: 100%;
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: transparent;
+  color: var(--ink);
+  font-weight: 600;
+  text-align: left;
+}
+
+.font-size-option:hover,
+.font-size-option.is-active {
+  background: rgba(155, 77, 47, 0.1);
+}
+
+.font-size-option.is-active {
   color: var(--accent-strong);
 }
 
@@ -859,7 +892,7 @@ button:disabled {
     align-items: center;
   }
 
-  .toolbar-picker {
+  .toolbar-picker--font {
     min-width: 0;
   }
 
@@ -872,22 +905,11 @@ button:disabled {
     width: min(240px, calc(100vw - 64px));
   }
 
-  .toolbar-select-wrap {
-    justify-content: space-between;
-    padding-right: 0;
-  }
-
   .toolbar-color-wrap {
     grid-column: span 1;
     width: 48px;
     justify-self: end;
     align-self: center;
-  }
-
-  .toolbar-select {
-    min-width: 0;
-    width: 100%;
-    font-size: 0.95rem;
   }
 
   .toolbar-button {
@@ -971,22 +993,12 @@ button:disabled {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .toolbar-picker {
+  .toolbar-picker--font {
     grid-column: span 2;
   }
 
   .toolbar-group--type {
     grid-template-columns: minmax(0, 1fr) 92px 44px;
-  }
-
-  .toolbar-select-wrap {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 6px;
-  }
-
-  .toolbar-select {
-    width: 100%;
   }
 
   .toolbar-color-wrap {
