@@ -2,6 +2,8 @@
 
 Static web app for creating branded A4 notepad pages and exporting them through the browser print flow as PDF.
 
+The rich-text editor is powered by [Lexical](https://lexical.dev/).
+
 ## Demo
 
 [https://sukujgrg.github.io/notepad/](https://sukujgrg.github.io/notepad/)
@@ -44,7 +46,7 @@ The built static site is written to:
 
 This app supports build-time branding defaults through Vite environment variables.
 
-Copy [.env.example](/Users/suku/github/lscnotepad/.env.example) to `.env` or set the variables in your build environment:
+Copy `/.env.example` to `.env` or set the variables in your build environment:
 
 ```bash
 VITE_HEADER_LABEL="Brand Label"
@@ -95,7 +97,7 @@ Then publish the files from:
 
 ## GitHub Pages
 
-A GitHub Actions workflow is included at [.github/workflows/github-pages.yml](/Users/suku/github/lscnotepad/.github/workflows/github-pages.yml).
+A GitHub Actions workflow is included at `/.github/workflows/github-pages.yml`.
 
 It:
 
