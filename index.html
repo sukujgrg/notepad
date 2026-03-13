@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Church Communication Generator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Manrope:wght@400;500;700&family=Merriweather:ital,wght@0,400;0,700;1,400;1,700&family=Playfair+Display:wght@400;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <section class="control-panel">
+      <div class="panel-copy">
+        <p class="eyebrow">Editor</p>
+        <h1>Notepad Generator</h1>
+        <p class="intro">
+          Customize the header, footer, colors, and logo, then print the A4 sheet to PDF.
+        </p>
+      </div>
+
+      <div class="branding-grid">
+        <label class="field" for="headerLabelInput">
+          <span>Header Label</span>
+          <input id="headerLabelInput" type="text" value="Brand Label">
+        </label>
+
+        <label class="field" for="headerTitleInput">
+          <span>Header Title</span>
+          <input id="headerTitleInput" type="text" value="Branded Notepad">
+        </label>
+
+        <label class="field branding-field" for="footerTextInput">
+          <span>Footer Text</span>
+          <input id="footerTextInput" type="text" value="123 Example Street, Sydney NSW 2000">
+        </label>
+
+        <label class="field branding-field" for="logoUploadInput">
+          <span>Logo Upload</span>
+          <input id="logoUploadInput" type="file" accept="image/*">
+        </label>
+      </div>
+
+      <div class="field-row field-row--branding">
+        <label class="field" for="headerColorInput">
+          <span>Header Color</span>
+          <input id="headerColorInput" class="brand-color-input" type="color" value="#213547">
+        </label>
+
+        <label class="field" for="footerColorInput">
+          <span>Footer Color</span>
+          <input id="footerColorInput" class="brand-color-input" type="color" value="#2e4f3f">
+        </label>
+      </div>
+
+      <div class="field-row">
+        <label class="field" for="dateInput">
+          <span>Date</span>
+          <input id="dateInput" type="date">
+        </label>
+
+        <label class="field" for="placeInput">
+          <span>Place</span>
+          <input id="placeInput" type="text" placeholder="Enter event place">
+        </label>
+      </div>
+
+      <div class="field message-field">
+        <span>Message</span>
+        <div class="message-editor-shell" id="messageEditorShell">
+          <div class="message-toolbar" aria-label="Message editor toolbar">
+            <div class="toolbar-row toolbar-row--primary">
+              <div class="toolbar-group toolbar-group--type" aria-label="Typography controls">
+                <div class="toolbar-picker" id="fontFamilyPicker">
+                  <button
+                    id="fontFamilyButton"
+                    class="toolbar-picker-button"
+                    type="button"
+                    aria-haspopup="listbox"
+                    aria-expanded="false"
+                    aria-controls="fontFamilyMenu"
+                    aria-label="Font family"
+                    title="Font family"
+                  >
+                    <span id="fontFamilyButtonLabel" class="font-preview" data-font-family="manrope">Manrope</span>
+                    <span class="toolbar-picker-caret" aria-hidden="true"></span>
+                  </button>
+                  <div id="fontFamilyMenu" class="toolbar-picker-menu" role="listbox" hidden>
+                    <button class="font-family-option" type="button" role="option" data-font-family="manrope" aria-selected="true">
+                      <span class="font-preview" data-font-family="manrope">Manrope</span>
+                    </button>
+                    <button class="font-family-option" type="button" role="option" data-font-family="inter" aria-selected="false">
+                      <span class="font-preview" data-font-family="inter">Inter</span>
+                    </button>
+                    <button class="font-family-option" type="button" role="option" data-font-family="lora" aria-selected="false">
+                      <span class="font-preview" data-font-family="lora">Lora</span>
+                    </button>
+                    <button class="font-family-option" type="button" role="option" data-font-family="merriweather" aria-selected="false">
+                      <span class="font-preview" data-font-family="merriweather">Merriweather</span>
+                    </button>
+                    <button class="font-family-option" type="button" role="option" data-font-family="source-serif" aria-selected="false">
+                      <span class="font-preview" data-font-family="source-serif">Source Serif</span>
+                    </button>
+                    <button class="font-family-option" type="button" role="option" data-font-family="fraunces" aria-selected="false">
+                      <span class="font-preview" data-font-family="fraunces">Fraunces</span>
+                    </button>
+                    <button class="font-family-option" type="button" role="option" data-font-family="playfair" aria-selected="false">
+                      <span class="font-preview" data-font-family="playfair">Playfair Display</span>
+                    </button>
+                  </div>
+                </div>
+                <label class="toolbar-select-wrap" for="fontSizeInput">
+                  <span class="sr-only">Font size</span>
+                  <select id="fontSizeInput" class="toolbar-select">
+                    <option value="18px">18</option>
+                    <option value="22px" selected>22</option>
+                    <option value="26px">26</option>
+                    <option value="32px">32</option>
+                  </select>
+                </label>
+                <label class="toolbar-select-wrap toolbar-color-wrap" for="textColorInput">
+                  <span class="sr-only">Text color</span>
+                  <input id="textColorInput" class="toolbar-color" type="color" value="#1f2430">
+                </label>
+              </div>
+              <div class="toolbar-group toolbar-group--format" aria-label="Text style controls">
+                <button id="boldButton" class="toolbar-button" type="button" aria-pressed="false" aria-label="Bold" title="Bold">
+                  <span class="toolbar-icon toolbar-icon--glyph" aria-hidden="true"><strong>B</strong></span>
+                </button>
+                <button id="italicButton" class="toolbar-button" type="button" aria-pressed="false" aria-label="Italic" title="Italic">
+                  <span class="toolbar-icon toolbar-icon--glyph" aria-hidden="true"><em>I</em></span>
+                </button>
+                <button id="underlineButton" class="toolbar-button" type="button" aria-pressed="false" aria-label="Underline" title="Underline">
+                  <span class="toolbar-icon toolbar-icon--glyph" aria-hidden="true"><u>U</u></span>
+                </button>
+              </div>
+            </div>
+            <div class="toolbar-row toolbar-row--secondary">
+              <div class="toolbar-group toolbar-group--layout" aria-label="Layout controls">
+                <button id="alignLeftButton" class="toolbar-button" type="button" aria-pressed="false" aria-label="Align left" title="Align left">
+                  <svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M4 6H18M4 10H14M4 14H18M4 18H14" />
+                  </svg>
+                </button>
+                <button id="alignCenterButton" class="toolbar-button" type="button" aria-pressed="false" aria-label="Align center" title="Align center">
+                  <svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 6H18M8 10H16M6 14H18M8 18H16" />
+                  </svg>
+                </button>
+                <button id="alignRightButton" class="toolbar-button" type="button" aria-pressed="false" aria-label="Align right" title="Align right">
+                  <svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 6H20M10 10H20M6 14H20M10 18H20" />
+                  </svg>
+                </button>
+                <button id="bulletListButton" class="toolbar-button" type="button" aria-pressed="false" aria-label="Bullet list" title="Bullet list">
+                  <svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 7H20M9 12H20M9 17H20" />
+                    <circle cx="5.5" cy="7" r="1.5" />
+                    <circle cx="5.5" cy="12" r="1.5" />
+                    <circle cx="5.5" cy="17" r="1.5" />
+                  </svg>
+                </button>
+                <button id="numberListButton" class="toolbar-button" type="button" aria-pressed="false" aria-label="Numbered list" title="Numbered list">
+                  <svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 7H20M9 12H20M9 17H20M4.5 5.5V8M4 8H5.5M4 10.5H5.5L4 13H5.5M4 15.5H5.5V18H4" />
+                  </svg>
+                </button>
+              </div>
+              <div class="toolbar-group toolbar-group--history" aria-label="History controls">
+                <button id="undoButton" class="toolbar-button" type="button" aria-label="Undo" title="Undo">
+                  <svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 7L4 12L9 17M5 12H14C17.314 12 20 14.686 20 18" />
+                  </svg>
+                </button>
+                <button id="redoButton" class="toolbar-button" type="button" aria-label="Redo" title="Redo">
+                  <svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M15 7L20 12L15 17M19 12H10C6.686 12 4 14.686 4 18" />
+                  </svg>
+                </button>
+                <button id="clearButton" class="toolbar-button" type="button" aria-label="Clear formatting" title="Clear formatting">
+                  <svg class="toolbar-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 5L19 19M19 5L5 19" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="editor-surface">
+            <div id="editorPlaceholder" class="editor-placeholder">Type your message here.</div>
+            <div id="messageEditor" class="message-editor rich-text-content" contenteditable="true" spellcheck="true" aria-label="Message editor"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="printButton" type="button">Print / Save PDF</button>
+      </div>
+
+      <p class="hint" id="statusMessage">
+        Customize the branding, message, and print the sheet as a PDF.
+      </p>
+    </section>
+
+    <section class="preview-panel preview-panel--hidden" aria-label="A4 preview" aria-hidden="true">
+      <div class="paper-frame">
+        <div id="previewPages" class="preview-pages"></div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
